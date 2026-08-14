@@ -12,7 +12,7 @@ data class Note(
 
     val content: String,
 
-    val color: String = "#6C5CE7",
+    val color: String = "#7C5CFC",
 
     val isFavorite: Boolean = false,
 

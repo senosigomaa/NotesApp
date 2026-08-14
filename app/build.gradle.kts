@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.senosi.notes"
-        minSdk = 24
+        minSdk = 29
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
@@ -40,6 +40,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.remote.creation.compose)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
@@ -59,5 +60,6 @@ dependencies {
     ksp("androidx.room:room-compiler:2.8.4")
 
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.3")
+    implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material:material-icons-extended")
 }

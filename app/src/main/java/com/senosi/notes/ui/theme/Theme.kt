@@ -2,42 +2,49 @@ package com.senosi.notes.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
-private val LightColorScheme = lightColorScheme(
-    primary = PrimaryPurple,
-    secondary = LightPurple,
-    tertiary = MintGreen,
+private val NotesDarkColorScheme = darkColorScheme(
+    primary = Primary,
+    onPrimary = TextPrimary,
 
-    background = AppBackground,
-    surface = CardBackground,
+    primaryContainer = SurfaceLight,
+    onPrimaryContainer = TextPrimary,
 
-    onPrimary = androidx.compose.ui.graphics.Color.White,
-    onSecondary = TextPrimary,
-    onTertiary = TextPrimary,
+    secondary = Accent,
+    onSecondary = Background,
 
+    secondaryContainer = SurfaceLight,
+    onSecondaryContainer = TextPrimary,
+
+    tertiary = Cyan,
+    onTertiary = Background,
+
+    tertiaryContainer = SurfaceLight,
+    onTertiaryContainer = TextPrimary,
+
+    background = Background,
     onBackground = TextPrimary,
-    onSurface = TextPrimary
-)
 
-private val DarkColorScheme = darkColorScheme(
-    primary = LightPurple,
-    secondary = PrimaryPurple,
-    tertiary = MintGreen
+    surface = Surface,
+    onSurface = TextPrimary,
+
+    surfaceVariant = SurfaceLight,
+    onSurfaceVariant = TextSecondary,
+
+    error = Danger,
+    onError = TextPrimary,
+
+    errorContainer = SurfaceLight,
+    onErrorContainer = Danger
 )
 
 @Composable
 fun NotesAppTheme(
-    darkTheme: Boolean = false,
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
-        colorScheme = if (darkTheme) {
-            DarkColorScheme
-        } else {
-            LightColorScheme
-        },
+        colorScheme = NotesDarkColorScheme,
         typography = Typography,
         content = content
     )

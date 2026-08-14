@@ -2,15 +2,61 @@ package com.senosi.notes.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val PrimaryPurple = Color(0xFF6C5CE7)
-val LightPurple = Color(0xFFA29BFE)
+// ==============================
+// Main App Colors
+// ==============================
 
-val MintGreen = Color(0xFF55EFC4)
-val SoftYellow = Color(0xFFFDCB6E)
-val SoftRed = Color(0xFFFF7675)
-val SoftGray = Color(0xFFDDE1E6)
+val Primary = Color(0xFF7C5CFC)
+val PrimaryPurple = Primary
+val PrimaryLight = Color(0xFF9B8AFB)
 
-val AppBackground = Color(0xFF646261)
-val CardBackground = Color(0xFFFFFFFF)
-val TextPrimary = Color(0xFF2D3436)
-val TextSecondary = Color(0xFF7A7A85)
+val Accent = Color(0xFFFDCB6E)
+val Cyan = Color(0xFF55EFC4)
+
+
+// ==============================
+// Dark Theme
+// ==============================
+
+val Background = Color(0xFF0F1016)
+
+val Surface = Color(0xFF181A23)
+
+val SurfaceLight = Color(0xFF242733)
+
+
+// ==============================
+// Text
+// ==============================
+
+val TextPrimary = Color(0xFFF5F5F7)
+
+val TextSecondary = Color(0xFFA7A9B4)
+
+val TextMuted = Color(0xFF737684)
+
+
+// ==============================
+// Note Colors
+// ==============================
+
+val NotePurple = Color(0xFF7C5CFC)
+
+val NoteLavender = Color(0xFFA29BFE)
+
+val NoteMint = Color(0xFF55EFC4)
+
+val NoteYellow = Color(0xFFFDCB6E)
+
+val NoteRed = Color(0xFFFF7675)
+
+val NoteGray = Color(0xFF636778)
+
+
+// ==============================
+// Status Colors
+// ==============================
+
+val Danger = Color(0xFFFF7675)
+
+val Success = Color(0xFF55EFC4)

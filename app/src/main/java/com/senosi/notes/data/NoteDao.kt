@@ -38,7 +38,13 @@ interface NoteDao {
     )
     fun observeTrash(): Flow<List<Note>>
 
-    @Query("SELECT * FROM notes WHERE id = :id LIMIT 1")
+    @Query(
+        """
+        SELECT * FROM notes
+        WHERE id = :id
+        LIMIT 1
+        """
+    )
     fun observeNote(id: Long): Flow<Note?>
 
     @Insert
