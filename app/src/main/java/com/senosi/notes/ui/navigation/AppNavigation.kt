@@ -10,12 +10,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.senosi.notes.ui.screens.AddEditNoteScreen
+import com.senosi.notes.ui.screens.CalendarScreen
 import com.senosi.notes.ui.screens.HomeScreen
 import com.senosi.notes.ui.screens.NoteDetailsScreen
 import com.senosi.notes.viewmodel.NotesViewModel
 
 object Routes {
     const val HOME = "home"
+    const val CALENDAR = "calendar"
     const val ADD_NOTE = "add_note"
     const val NOTE_DETAILS = "note_details"
 }
@@ -45,7 +47,7 @@ fun AppNavigation(
                 notes = notes,
 
                 onMenuClick = {
-                    // هنركب الـ Drawer هنا
+                    // Drawer هنا
                 },
 
                 onSearchClick = {
@@ -68,6 +70,44 @@ fun AppNavigation(
                 onFavoriteClick = { note ->
 
                     viewModel.toggleFavorite(note)
+                },
+
+                // ====================================================
+                // BOTTOM NAVIGATION
+                // ====================================================
+
+                onCalendarClick = {
+
+                    navController.navigate(
+                        Routes.CALENDAR
+                    ) {
+                        launchSingleTop = true
+                    }
+                },
+
+                onStatsClick = {
+                    // Stats بعدين
+                },
+
+                onSettingsClick = {
+                    // Settings بعدين
+                }
+            )
+        }
+
+        // ============================================================
+        // CALENDAR
+        // ============================================================
+
+        composable(Routes.CALENDAR) {
+
+            CalendarScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+
+                onAddEventClick = {
+                    // إضافة Event بعدين
                 }
             )
         }
@@ -128,7 +168,7 @@ fun AppNavigation(
                     },
 
                     onEditClick = {
-                        // هنضيف Edit navigation هنا
+                        // Edit navigation بعدين
                     },
 
                     onFavoriteClick = {

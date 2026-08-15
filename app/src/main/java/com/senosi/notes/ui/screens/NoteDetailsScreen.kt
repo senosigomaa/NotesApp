@@ -28,14 +28,9 @@ import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.AttachFile
 import androidx.compose.material.icons.outlined.StarBorder
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -98,32 +93,33 @@ fun NoteDetailsScreen(
         ).format(Date(note.updatedAt))
     }
 
-    Scaffold(
-        containerColor = Background,
-        bottomBar = {
-            NoteDetailsBottomBar(
-                onEditClick = onEditClick,
-                onDeleteClick = onDeleteClick
-            )
-        }
-    ) { paddingValues ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Background)
+            .navigationBarsPadding()
+    ) {
+
+        /*
+         * ============================================================
+         * MAIN CONTENT
+         * ============================================================
+         */
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+                .weight(1f)
                 .verticalScroll(scrollState)
                 .padding(
-                    start = 24.dp,
-                    end = 24.dp,
-                    top = 18.dp
+                    horizontal = 20.dp,
+                    vertical = 18.dp
                 )
         ) {
 
             /*
-             * ---------------------------------------------------------
+             * ========================================================
              * TOP BAR
-             * ---------------------------------------------------------
+             * ========================================================
              */
 
             Row(
@@ -157,11 +153,11 @@ fun NoteDetailsScreen(
                         },
                         contentDescription = "Favorite",
                         tint = if (note.isFavorite) {
-                            Primary
+                            noteColor
                         } else {
                             TextSecondary
                         },
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(23.dp)
                     )
                 }
 
@@ -175,7 +171,7 @@ fun NoteDetailsScreen(
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "Edit",
-                        tint = Primary,
+                        tint = noteColor,
                         modifier = Modifier.size(22.dp)
                     )
                 }
@@ -185,6 +181,7 @@ fun NoteDetailsScreen(
                 )
 
                 Box {
+
                     DetailIconButton(
                         onClick = {
                             moreMenuExpanded = true
@@ -205,6 +202,7 @@ fun NoteDetailsScreen(
                         },
                         containerColor = Surface
                     ) {
+
                         DropdownMenuItem(
                             text = {
                                 Text(
@@ -216,7 +214,7 @@ fun NoteDetailsScreen(
                                 Icon(
                                     imageVector = Icons.Default.Edit,
                                     contentDescription = null,
-                                    tint = Primary
+                                    tint = noteColor
                                 )
                             },
                             onClick = {
@@ -249,13 +247,13 @@ fun NoteDetailsScreen(
             }
 
             Spacer(
-                modifier = Modifier.height(30.dp)
+                modifier = Modifier.height(28.dp)
             )
 
             /*
-             * ---------------------------------------------------------
-             * META ROW
-             * ---------------------------------------------------------
+             * ========================================================
+             * META
+             * ========================================================
              */
 
             Row(
@@ -274,8 +272,7 @@ fun NoteDetailsScreen(
                 Text(
                     text = formattedDate,
                     color = TextSecondary,
-                    fontSize = 13.sp,
-                    maxLines = 1
+                    fontSize = 12.sp
                 )
             }
 
@@ -284,31 +281,34 @@ fun NoteDetailsScreen(
             )
 
             /*
-             * ---------------------------------------------------------
+             * ========================================================
              * TITLE
-             * ---------------------------------------------------------
+             * ========================================================
              */
 
             GradientTitle(
                 text = note.title.ifBlank {
                     "Untitled Note"
-                }
+                },
+                noteColor = noteColor
             )
 
             Spacer(
                 modifier = Modifier.height(18.dp)
             )
 
-            NeonTitleDivider()
+            NeonTitleDivider(
+                noteColor = noteColor
+            )
 
             Spacer(
-                modifier = Modifier.height(38.dp)
+                modifier = Modifier.height(34.dp)
             )
 
             /*
-             * ---------------------------------------------------------
+             * ========================================================
              * CONTENT
-             * ---------------------------------------------------------
+             * ========================================================
              */
 
             Text(
@@ -316,61 +316,57 @@ fun NoteDetailsScreen(
                     "No content in this note."
                 },
                 color = TextSecondary,
-                fontSize = 20.sp,
-                lineHeight = 32.sp,
-                fontWeight = FontWeight.Normal
+                fontSize = 18.sp,
+                lineHeight = 30.sp
             )
 
             Spacer(
-                modifier = Modifier.height(40.dp)
+                modifier = Modifier.height(36.dp)
             )
 
             /*
-             * ---------------------------------------------------------
-             * KEY POINTS
-             * ---------------------------------------------------------
-             *
-             * We don't invent key points because the Note model
-             * currently has only title/content/color/etc.
-             *
-             * Instead, this section gives the screen the same visual
-             * rhythm without corrupting the data.
+             * ========================================================
+             * NOTE INFO
+             * ========================================================
              */
 
             SectionHeader(
-                title = "Note Overview",
-                icon = "✦"
+                title = "Note Info",
+                icon = "✦",
+                color = noteColor
             )
 
             Spacer(
-                modifier = Modifier.height(18.dp)
+                modifier = Modifier.height(16.dp)
             )
 
-            NoteOverview(
+            NoteInfoCard(
                 note = note,
                 color = noteColor
             )
 
             Spacer(
-                modifier = Modifier.height(38.dp)
+                modifier = Modifier.height(32.dp)
             )
 
             /*
-             * ---------------------------------------------------------
-             * DECORATIVE DIVIDER
-             * ---------------------------------------------------------
+             * ========================================================
+             * DIVIDER
+             * ========================================================
              */
 
-            WaveDivider()
+            WaveDivider(
+                color = noteColor
+            )
 
             Spacer(
-                modifier = Modifier.height(30.dp)
+                modifier = Modifier.height(28.dp)
             )
 
             /*
-             * ---------------------------------------------------------
+             * ========================================================
              * ATTACHMENTS
-             * ---------------------------------------------------------
+             * ========================================================
              */
 
             Row(
@@ -380,56 +376,67 @@ fun NoteDetailsScreen(
 
                 Text(
                     text = "Attachments",
-                    color = Primary,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    color = noteColor,
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Spacer(
                     modifier = Modifier.weight(1f)
                 )
 
-                OutlinedButton(
-                    onClick = {},
-                    enabled = false,
-                    shape = RoundedCornerShape(50),
-                    border = androidx.compose.material3.ButtonDefaults.outlinedButtonBorder,
-                    contentPadding = ButtonDefaults.ContentPadding
-                ) {
-                    Text(
-                        text = "View All",
-                        color = TextMuted,
-                        fontSize = 13.sp
-                    )
-                }
+                Text(
+                    text = "0 files",
+                    color = TextMuted,
+                    fontSize = 12.sp
+                )
             }
 
             Spacer(
-                modifier = Modifier.height(16.dp)
+                modifier = Modifier.height(14.dp)
             )
 
-            AttachmentEmptyState()
+            AttachmentEmptyState(
+                color = noteColor
+            )
 
             Spacer(
-                modifier = Modifier.height(34.dp)
+                modifier = Modifier.height(26.dp)
             )
 
             /*
-             * ---------------------------------------------------------
+             * ========================================================
              * DECORATIVE WAVE
-             * ---------------------------------------------------------
+             * ========================================================
              */
 
-            DecorativeWave()
+            DecorativeWave(
+                color = noteColor
+            )
 
             Spacer(
-                modifier = Modifier.height(24.dp)
+                modifier = Modifier.height(20.dp)
             )
         }
+
+        /*
+         * ============================================================
+         * BOTTOM ACTIONS
+         * ============================================================
+         */
+
+        NoteDetailsBottomBar(
+            color = noteColor,
+            onEditClick = onEditClick,
+            onDeleteClick = onDeleteClick
+        )
     }
 }
 
 /*
- * ================================================================
+ * ========================================================================
  * TOP ICON BUTTON
- * ================================================================
+ * ========================================================================
  */
 
 @Composable
@@ -439,7 +446,7 @@ private fun DetailIconButton(
 ) {
     Box(
         modifier = Modifier
-            .size(52.dp)
+            .size(50.dp)
             .clip(CircleShape)
             .background(
                 Brush.radialGradient(
@@ -454,7 +461,9 @@ private fun DetailIconButton(
                 color = SurfaceLight,
                 shape = CircleShape
             )
-            .clickable(onClick = onClick),
+            .clickable(
+                onClick = onClick
+            ),
         contentAlignment = Alignment.Center
     ) {
         content()
@@ -462,9 +471,9 @@ private fun DetailIconButton(
 }
 
 /*
- * ================================================================
+ * ========================================================================
  * CATEGORY BADGE
- * ================================================================
+ * ========================================================================
  */
 
 @Composable
@@ -479,11 +488,11 @@ private fun CategoryBadge(
             )
             .border(
                 width = 1.dp,
-                color = color.copy(alpha = 0.20f),
+                color = color.copy(alpha = 0.22f),
                 shape = RoundedCornerShape(50)
             )
             .padding(
-                horizontal = 14.dp,
+                horizontal = 13.dp,
                 vertical = 8.dp
             ),
         verticalAlignment = Alignment.CenterVertically
@@ -510,24 +519,25 @@ private fun CategoryBadge(
 }
 
 /*
- * ================================================================
+ * ========================================================================
  * GRADIENT TITLE
- * ================================================================
+ * ========================================================================
  */
 
 @Composable
 private fun GradientTitle(
-    text: String
+    text: String,
+    noteColor: Color
 ) {
     Text(
         text = text,
         style = TextStyle(
-            fontSize = 40.sp,
-            lineHeight = 46.sp,
+            fontSize = 38.sp,
+            lineHeight = 45.sp,
             fontWeight = FontWeight.Bold,
             brush = Brush.linearGradient(
                 colors = listOf(
-                    Primary,
+                    noteColor,
                     Accent,
                     Color(0xFFFF4FD8)
                 )
@@ -537,22 +547,24 @@ private fun GradientTitle(
 }
 
 /*
- * ================================================================
- * NEON DIVIDER
- * ================================================================
+ * ========================================================================
+ * TITLE DIVIDER
+ * ========================================================================
  */
 
 @Composable
-private fun NeonTitleDivider() {
+private fun NeonTitleDivider(
+    noteColor: Color
+) {
     Box(
         modifier = Modifier
-            .width(100.dp)
+            .width(96.dp)
             .height(4.dp)
             .clip(RoundedCornerShape(50))
             .background(
                 Brush.horizontalGradient(
                     colors = listOf(
-                        Primary,
+                        noteColor,
                         Color(0xFFFF4FD8),
                         Accent
                     )
@@ -566,15 +578,16 @@ private fun NeonTitleDivider() {
 }
 
 /*
- * ================================================================
+ * ========================================================================
  * SECTION HEADER
- * ================================================================
+ * ========================================================================
  */
 
 @Composable
 private fun SectionHeader(
     title: String,
-    icon: String
+    icon: String,
+    color: Color
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
@@ -582,41 +595,55 @@ private fun SectionHeader(
 
         Text(
             text = icon,
-            color = Primary,
-            fontSize = 23.sp,
+            color = color,
+            fontSize = 21.sp,
             fontWeight = FontWeight.Bold
         )
 
         Spacer(
-            modifier = Modifier.width(10.dp)
+            modifier = Modifier.width(9.dp)
         )
 
         Text(
             text = title,
-            color = Primary,
-            fontSize = 20.sp,
+            color = color,
+            fontSize = 19.sp,
             fontWeight = FontWeight.SemiBold
         )
     }
 }
 
 /*
- * ================================================================
- * NOTE OVERVIEW
- * ================================================================
+ * ========================================================================
+ * NOTE INFO CARD
+ * ========================================================================
  */
 
 @Composable
-private fun NoteOverview(
+private fun NoteInfoCard(
     note: Note,
     color: Color
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(18.dp))
+            .background(
+                Surface.copy(alpha = 0.82f)
+            )
+            .border(
+                width = 1.dp,
+                color = SurfaceLight,
+                shape = RoundedCornerShape(18.dp)
+            )
+            .padding(
+                horizontal = 18.dp,
+                vertical = 16.dp
+            ),
+        verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
 
-        OverviewRow(
+        InfoRow(
             label = "Status",
             value = if (note.isFavorite) {
                 "Favorite"
@@ -624,19 +651,19 @@ private fun NoteOverview(
                 "Regular note"
             },
             color = if (note.isFavorite) {
-                Accent
+                color
             } else {
                 TextSecondary
             }
         )
 
-        OverviewRow(
+        InfoRow(
             label = "Color",
             value = note.color.uppercase(),
             color = color
         )
 
-        OverviewRow(
+        InfoRow(
             label = "Content",
             value = "${note.content.length} characters",
             color = TextSecondary
@@ -644,8 +671,14 @@ private fun NoteOverview(
     }
 }
 
+/*
+ * ========================================================================
+ * INFO ROW
+ * ========================================================================
+ */
+
 @Composable
-private fun OverviewRow(
+private fun InfoRow(
     label: String,
     value: String,
     color: Color
@@ -669,31 +702,33 @@ private fun OverviewRow(
         Text(
             text = label,
             color = TextSecondary,
-            fontSize = 14.sp,
+            fontSize = 13.sp,
             modifier = Modifier.weight(1f)
         )
 
         Text(
             text = value,
             color = TextPrimary,
-            fontSize = 14.sp,
+            fontSize = 13.sp,
             fontWeight = FontWeight.Medium
         )
     }
 }
 
 /*
- * ================================================================
+ * ========================================================================
  * WAVE DIVIDER
- * ================================================================
+ * ========================================================================
  */
 
 @Composable
-private fun WaveDivider() {
+private fun WaveDivider(
+    color: Color
+) {
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
-            .height(32.dp)
+            .height(30.dp)
     ) {
 
         val centerY = size.height / 2f
@@ -702,27 +737,40 @@ private fun WaveDivider() {
             brush = Brush.horizontalGradient(
                 colors = listOf(
                     Color.Transparent,
-                    Primary.copy(alpha = 0.35f)
+                    color.copy(alpha = 0.35f)
                 )
             ),
-            start = Offset(0f, centerY),
-            end = Offset(size.width * 0.42f, centerY),
+            start = Offset(
+                0f,
+                centerY
+            ),
+            end = Offset(
+                size.width * 0.42f,
+                centerY
+            ),
             strokeWidth = 1.5f
         )
 
         drawLine(
             brush = Brush.horizontalGradient(
                 colors = listOf(
-                    Primary.copy(alpha = 0.35f),
+                    color.copy(alpha = 0.35f),
                     Color.Transparent
                 )
             ),
-            start = Offset(size.width * 0.58f, centerY),
-            end = Offset(size.width, centerY),
+            start = Offset(
+                size.width * 0.58f,
+                centerY
+            ),
+            end = Offset(
+                size.width,
+                centerY
+            ),
             strokeWidth = 1.5f
         )
 
         val path = Path().apply {
+
             moveTo(
                 size.width * 0.44f,
                 centerY
@@ -751,23 +799,27 @@ private fun WaveDivider() {
             path = path,
             brush = Brush.horizontalGradient(
                 colors = listOf(
-                    Primary,
+                    color,
                     Color(0xFFFF4FD8)
                 )
             ),
-            style = Stroke(width = 3f)
+            style = Stroke(
+                width = 3f
+            )
         )
     }
 }
 
 /*
- * ================================================================
+ * ========================================================================
  * ATTACHMENT EMPTY STATE
- * ================================================================
+ * ========================================================================
  */
 
 @Composable
-private fun AttachmentEmptyState() {
+private fun AttachmentEmptyState(
+    color: Color
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -798,14 +850,15 @@ private fun AttachmentEmptyState() {
                     .size(52.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(
-                        Primary.copy(alpha = 0.12f)
+                        color.copy(alpha = 0.12f)
                     ),
                 contentAlignment = Alignment.Center
             ) {
+
                 Icon(
                     imageVector = Icons.Outlined.AttachFile,
                     contentDescription = null,
-                    tint = Primary,
+                    tint = color,
                     modifier = Modifier.size(25.dp)
                 )
             }
@@ -835,17 +888,19 @@ private fun AttachmentEmptyState() {
 }
 
 /*
- * ================================================================
- * DECORATIVE NEON WAVE
- * ================================================================
+ * ========================================================================
+ * DECORATIVE WAVE
+ * ========================================================================
  */
 
 @Composable
-private fun DecorativeWave() {
+private fun DecorativeWave(
+    color: Color
+) {
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
-            .height(90.dp)
+            .height(75.dp)
     ) {
 
         repeat(4) { index ->
@@ -854,7 +909,7 @@ private fun DecorativeWave() {
 
             val yOffset =
                 size.height * 0.30f +
-                        (index * 10f)
+                        index * 9f
 
             path.moveTo(
                 0f,
@@ -863,18 +918,18 @@ private fun DecorativeWave() {
 
             path.cubicTo(
                 size.width * 0.18f,
-                yOffset - 22f,
+                yOffset - 20f,
                 size.width * 0.32f,
-                yOffset + 22f,
+                yOffset + 20f,
                 size.width * 0.50f,
                 yOffset
             )
 
             path.cubicTo(
                 size.width * 0.68f,
-                yOffset - 22f,
+                yOffset - 20f,
                 size.width * 0.82f,
-                yOffset + 22f,
+                yOffset + 20f,
                 size.width,
                 yOffset
             )
@@ -884,11 +939,11 @@ private fun DecorativeWave() {
                 brush = Brush.horizontalGradient(
                     colors = listOf(
                         Color.Transparent,
-                        Primary.copy(
-                            alpha = 0.45f - index * 0.07f
+                        color.copy(
+                            alpha = 0.40f - index * 0.06f
                         ),
                         Color(0xFFFF4FD8).copy(
-                            alpha = 0.25f
+                            alpha = 0.22f
                         ),
                         Color.Transparent
                     )
@@ -902,13 +957,14 @@ private fun DecorativeWave() {
 }
 
 /*
- * ================================================================
+ * ========================================================================
  * BOTTOM ACTION BAR
- * ================================================================
+ * ========================================================================
  */
 
 @Composable
 private fun NoteDetailsBottomBar(
+    color: Color,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
@@ -918,64 +974,83 @@ private fun NoteDetailsBottomBar(
             .background(
                 Background.copy(alpha = 0.98f)
             )
-            .navigationBarsPadding()
             .padding(
-                start = 24.dp,
-                end = 24.dp,
+                start = 20.dp,
+                end = 20.dp,
                 top = 12.dp,
-                bottom = 14.dp
-            ),
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
+                bottom = 10.dp
+            )
+            .navigationBarsPadding(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        Button(
-            onClick = onEditClick,
+        Box(
             modifier = Modifier
                 .weight(1f)
-                .height(62.dp)
+                .height(60.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .background(
+                    Brush.horizontalGradient(
+                        colors = listOf(
+                            color,
+                            Primary
+                        )
+                    )
+                )
                 .shadow(
-                    elevation = 16.dp,
-                    shape = RoundedCornerShape(22.dp)
+                    elevation = 14.dp,
+                    shape = RoundedCornerShape(20.dp)
+                )
+                .clickable(
+                    onClick = onEditClick
                 ),
-            shape = RoundedCornerShape(22.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Primary,
-                contentColor = Color.White
-            )
+            contentAlignment = Alignment.Center
         ) {
 
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = null,
-                modifier = Modifier.size(21.dp)
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
 
-            Spacer(
-                modifier = Modifier.width(10.dp)
-            )
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(21.dp)
+                )
 
-            Text(
-                text = "Edit Note",
-                fontSize = 17.sp,
-                fontWeight = FontWeight.SemiBold
-            )
+                Spacer(
+                    modifier = Modifier.width(9.dp)
+                )
+
+                Text(
+                    text = "Edit Note",
+                    color = Color.White,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
 
-        IconButton(
-            onClick = onDeleteClick,
+        Box(
             modifier = Modifier
-                .size(62.dp)
-                .clip(RoundedCornerShape(22.dp))
+                .size(60.dp)
+                .clip(RoundedCornerShape(20.dp))
                 .background(
                     Danger.copy(alpha = 0.08f)
                 )
                 .border(
                     width = 1.dp,
                     color = Danger.copy(alpha = 0.55f),
-                    shape = RoundedCornerShape(22.dp)
+                    shape = RoundedCornerShape(20.dp)
                 )
+                .clickable(
+                    onClick = onDeleteClick
+                ),
+            contentAlignment = Alignment.Center
         ) {
+
             Icon(
                 imageVector = Icons.Default.Delete,
                 contentDescription = "Move to trash",
