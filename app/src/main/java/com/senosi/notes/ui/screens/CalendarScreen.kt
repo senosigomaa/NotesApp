@@ -113,7 +113,7 @@ fun CalendarScreen(
             start = 20.dp,
             end = 20.dp,
             top = 18.dp,
-            bottom = 110.dp
+            bottom = 30.dp
         ),
 
         verticalArrangement = Arrangement.spacedBy(0.dp)

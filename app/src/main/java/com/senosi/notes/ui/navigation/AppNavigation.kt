@@ -1,24 +1,45 @@
 package com.senosi.notes.ui.navigation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.senosi.notes.ui.screens.AddEditNoteScreen
 import com.senosi.notes.ui.screens.CalendarScreen
 import com.senosi.notes.ui.screens.HomeScreen
 import com.senosi.notes.ui.screens.NoteDetailsScreen
+import com.senosi.notes.ui.screens.StatisticsScreen
+import com.senosi.notes.ui.theme.Background
+import com.senosi.notes.ui.theme.TextPrimary
 import com.senosi.notes.viewmodel.NotesViewModel
 
 object Routes {
+
     const val HOME = "home"
+
     const val CALENDAR = "calendar"
+
+    const val STATS = "stats"
+
+    const val SETTINGS = "settings"
+
     const val ADD_NOTE = "add_note"
+
     const val NOTE_DETAILS = "note_details"
 }
 
@@ -32,155 +53,277 @@ fun AppNavigation(
         .observeNotes()
         .collectAsState(initial = emptyList())
 
-    NavHost(
-        navController = navController,
-        startDestination = Routes.HOME
-    ) {
+    val backStackEntry by navController
+        .currentBackStackEntryAsState()
 
-        // ============================================================
-        // HOME
-        // ============================================================
+    val currentRoute =
+        backStackEntry?.destination?.route
 
-        composable(Routes.HOME) {
+    val topLevelRoutes = setOf(
+        Routes.HOME,
+        Routes.CALENDAR,
+        Routes.STATS,
+        Routes.SETTINGS
+    )
 
-            HomeScreen(
-                notes = notes,
+    val showBottomNavigation =
+        currentRoute in topLevelRoutes
 
-                onMenuClick = {
-                    // Drawer هنا
-                },
+    fun navigateToTopLevel(route: String) {
 
-                onSearchClick = {
-                    // Search بعدين
-                },
+        if (currentRoute == route) {
+            return
+        }
 
-                onAddNoteClick = {
-                    navController.navigate(
-                        Routes.ADD_NOTE
-                    )
-                },
+        navController.navigate(route) {
 
-                onNoteClick = { noteId ->
+            popUpTo(Routes.HOME) {
+                saveState = true
+            }
 
-                    navController.navigate(
-                        "${Routes.NOTE_DETAILS}/$noteId"
-                    )
-                },
+            launchSingleTop = true
 
-                onFavoriteClick = { note ->
+            restoreState = true
+        }
+    }
 
-                    viewModel.toggleFavorite(note)
-                },
+    Scaffold(
+        containerColor = Background,
 
-                // ====================================================
-                // BOTTOM NAVIGATION
-                // ====================================================
+        bottomBar = {
 
-                onCalendarClick = {
+            if (showBottomNavigation) {
 
-                    navController.navigate(
-                        Routes.CALENDAR
-                    ) {
-                        launchSingleTop = true
+                AppBottomNavigation(
+                    selectedRoute =
+                        currentRoute
+                            ?: Routes.HOME,
+
+                    onNotesClick = {
+                        navigateToTopLevel(
+                            Routes.HOME
+                        )
+                    },
+
+                    onCalendarClick = {
+                        navigateToTopLevel(
+                            Routes.CALENDAR
+                        )
+                    },
+
+                    onAddClick = {
+                        navController.navigate(
+                            Routes.ADD_NOTE
+                        )
+                    },
+
+                    onStatsClick = {
+                        navigateToTopLevel(
+                            Routes.STATS
+                        )
+                    },
+
+                    onSettingsClick = {
+                        navigateToTopLevel(
+                            Routes.SETTINGS
+                        )
                     }
-                },
-
-                onStatsClick = {
-                    // Stats بعدين
-                },
-
-                onSettingsClick = {
-                    // Settings بعدين
-                }
-            )
+                )
+            }
         }
+    ) { innerPadding ->
 
-        // ============================================================
-        // CALENDAR
-        // ============================================================
+        NavHost(
+            navController = navController,
+            startDestination = Routes.HOME,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
 
-        composable(Routes.CALENDAR) {
+            // ========================================================
+            // HOME
+            // ========================================================
 
-            CalendarScreen(
-                onBackClick = {
-                    navController.popBackStack()
-                },
+            composable(Routes.HOME) {
 
-                onAddEventClick = {
-                    // إضافة Event بعدين
-                }
-            )
-        }
+                HomeScreen(
+                    notes = notes,
 
-        // ============================================================
-        // ADD NOTE
-        // ============================================================
+                    onMenuClick = {
+                        // Drawer لاحقاً
+                    },
 
-        composable(Routes.ADD_NOTE) {
+                    onSearchClick = {
+                        // Search لاحقاً
+                    },
 
-            AddEditNoteScreen(
-                note = null,
+                    onAddNoteClick = {
+                        navController.navigate(
+                            Routes.ADD_NOTE
+                        )
+                    },
 
-                onBackClick = {
-                    navController.popBackStack()
-                },
+                    onNoteClick = { noteId ->
 
-                onSave = { title, content, color ->
+                        navController.navigate(
+                            "${Routes.NOTE_DETAILS}/$noteId"
+                        )
+                    },
 
-                    viewModel.addNote(
-                        title = title,
-                        content = content,
-                        color = color
-                    )
+                    onFavoriteClick = { note ->
 
-                    navController.popBackStack()
-                }
-            )
-        }
+                        viewModel.toggleFavorite(
+                            note
+                        )
+                    }
+                )
+            }
 
-        // ============================================================
-        // NOTE DETAILS
-        // ============================================================
+            // ========================================================
+            // CALENDAR
+            // ========================================================
 
-        composable(
-            route = "${Routes.NOTE_DETAILS}/{noteId}",
-            arguments = listOf(
-                navArgument("noteId") {
-                    type = NavType.LongType
-                }
-            )
-        ) { backStackEntry ->
+            composable(Routes.CALENDAR) {
 
-            val noteId =
-                backStackEntry.arguments?.getLong("noteId")
+                CalendarScreen(
+                    onBackClick = {
 
-            val note by viewModel
-                .observeNote(noteId ?: -1L)
-                .collectAsState(initial = null)
+                        navigateToTopLevel(
+                            Routes.HOME
+                        )
+                    },
 
-            note?.let {
+                    onAddEventClick = {
+                        // إضافة Event لاحقاً
+                    }
+                )
+            }
 
-                NoteDetailsScreen(
-                    note = it,
+            // ========================================================
+            // STATISTICS
+            // ========================================================
+
+            composable(Routes.STATS) {
+
+                StatisticsScreen(
+                    notes = notes
+                )
+            }
+
+            // ========================================================
+            // SETTINGS
+            // ========================================================
+
+            composable(Routes.SETTINGS) {
+
+                SettingsPlaceholder()
+            }
+
+            // ========================================================
+            // ADD NOTE
+            // ========================================================
+
+            composable(Routes.ADD_NOTE) {
+
+                AddEditNoteScreen(
+                    note = null,
 
                     onBackClick = {
                         navController.popBackStack()
                     },
 
-                    onEditClick = {
-                        // Edit navigation بعدين
-                    },
+                    onSave = {
+                            title,
+                            content,
+                            color ->
 
-                    onFavoriteClick = {
-                        viewModel.toggleFavorite(it)
-                    },
+                        viewModel.addNote(
+                            title = title,
+                            content = content,
+                            color = color
+                        )
 
-                    onDeleteClick = {
-                        viewModel.moveToTrash(it)
                         navController.popBackStack()
                     }
                 )
             }
+
+            // ========================================================
+            // NOTE DETAILS
+            // ========================================================
+
+            composable(
+                route =
+                    "${Routes.NOTE_DETAILS}/{noteId}",
+
+                arguments = listOf(
+                    navArgument("noteId") {
+                        type = NavType.LongType
+                    }
+                )
+            ) { backStackEntry ->
+
+                val noteId =
+                    backStackEntry
+                        .arguments
+                        ?.getLong("noteId")
+
+                val note by viewModel
+                    .observeNote(
+                        noteId ?: -1L
+                    )
+                    .collectAsState(
+                        initial = null
+                    )
+
+                note?.let {
+
+                    NoteDetailsScreen(
+                        note = it,
+
+                        onBackClick = {
+                            navController.popBackStack()
+                        },
+
+                        onEditClick = {
+                            // Edit لاحقاً
+                        },
+
+                        onFavoriteClick = {
+                            viewModel.toggleFavorite(
+                                it
+                            )
+                        },
+
+                        onDeleteClick = {
+
+                            viewModel.moveToTrash(
+                                it
+                            )
+
+                            navController.popBackStack()
+                        }
+                    )
+                }
+            }
         }
+    }
+}
+
+@Composable
+private fun SettingsPlaceholder() {
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Background),
+        contentAlignment = Alignment.Center
+    ) {
+
+        Text(
+            text = "Settings",
+            color = TextPrimary
+        )
     }
 }
