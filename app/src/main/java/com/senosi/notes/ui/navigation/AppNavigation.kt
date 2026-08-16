@@ -1,17 +1,13 @@
 package com.senosi.notes.ui.navigation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -23,9 +19,9 @@ import com.senosi.notes.ui.screens.AddEditNoteScreen
 import com.senosi.notes.ui.screens.CalendarScreen
 import com.senosi.notes.ui.screens.HomeScreen
 import com.senosi.notes.ui.screens.NoteDetailsScreen
+import com.senosi.notes.ui.screens.SettingsScreen
 import com.senosi.notes.ui.screens.StatisticsScreen
 import com.senosi.notes.ui.theme.Background
-import com.senosi.notes.ui.theme.TextPrimary
 import com.senosi.notes.viewmodel.NotesViewModel
 
 object Routes {
@@ -36,7 +32,7 @@ object Routes {
 
     const val STATS = "stats"
 
-    const val SETTINGS = "settings"
+    const val SETTINGS = "SettingsScreen"
 
     const val ADD_NOTE = "add_note"
 
@@ -217,9 +213,54 @@ fun AppNavigation(
 
             composable(Routes.SETTINGS) {
 
-                SettingsPlaceholder()
-            }
+                SettingsScreen(
+                    onBackClick = {
+                        navigateToTopLevel(
+                            Routes.HOME
+                        )
+                    },
 
+                    onProfileClick = {
+                        // Profile لاحقاً
+                    },
+
+                    onUpgradeClick = {
+                        // Premium لاحقاً
+                    },
+
+                    onAppearanceClick = {
+                        // Appearance
+                    },
+
+                    onAccentColorClick = {
+                        // Accent Color
+                    },
+
+                    onFontStyleClick = {
+                        // Font Style
+                    },
+
+                    onNoteViewClick = {
+                        // Note View
+                    },
+
+                    onBackupClick = {
+                        // Backup & Sync
+                    },
+
+                    onSecurityClick = {
+                        // Security
+                    },
+
+                    onHelpClick = {
+                        // Help & Support
+                    },
+
+                    onAboutClick = {
+                        // About App
+                    }
+                )
+            }
             // ========================================================
             // ADD NOTE
             // ========================================================
@@ -311,19 +352,3 @@ fun AppNavigation(
     }
 }
 
-@Composable
-private fun SettingsPlaceholder() {
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Background),
-        contentAlignment = Alignment.Center
-    ) {
-
-        Text(
-            text = "Settings",
-            color = TextPrimary
-        )
-    }
-}
