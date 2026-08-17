@@ -33,7 +33,7 @@ interface NoteDao {
         """
         SELECT * FROM notes
         WHERE isDeleted = 1
-        ORDER BY updatedAt DESC
+        ORDER BY COALESCE(deletedAt, updatedAt) DESC
         """
     )
     fun observeTrash(): Flow<List<Note>>
@@ -55,4 +55,38 @@ interface NoteDao {
 
     @Delete
     suspend fun delete(note: Note)
+
+    @Query(
+        """
+        DELETE FROM notes
+        WHERE isDeleted = 1
+        """
+    )
+    suspend fun deleteAllTrash()
+
+    @Query(
+        """
+        UPDATE notes
+        SET
+            isDeleted = 0,
+            deletedAt = NULL,
+            updatedAt = :updatedAt
+        WHERE isDeleted = 1
+        """
+    )
+    suspend fun restoreAllTrash(
+        updatedAt: Long
+    )
+
+    @Query(
+        """
+        DELETE FROM notes
+        WHERE isDeleted = 1
+        AND deletedAt IS NOT NULL
+        AND deletedAt <= :expirationTime
+        """
+    )
+    suspend fun deleteExpiredTrash(
+        expirationTime: Long
+    )
 }

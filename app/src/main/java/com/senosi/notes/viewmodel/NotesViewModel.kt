@@ -15,9 +15,24 @@ class NotesViewModel(
 
     private val repository: NoteRepository
 
+    companion object {
+        private const val TRASH_RETENTION_DAYS = 30L
+
+        private const val MILLIS_PER_DAY =
+            24L * 60L * 60L * 1000L
+    }
+
     init {
-        val database = NotesDatabase.getInstance(application)
-        repository = NoteRepository(database.noteDao())
+
+        val database =
+            NotesDatabase.getInstance(application)
+
+        repository =
+            NoteRepository(
+                database.noteDao()
+            )
+
+        cleanupExpiredTrash()
 
         seedNotes()
     }
@@ -44,6 +59,7 @@ class NotesViewModel(
         color: String
     ) {
         viewModelScope.launch {
+
             repository.insert(
                 Note(
                     title = title,
@@ -56,9 +72,11 @@ class NotesViewModel(
 
     fun updateNote(note: Note) {
         viewModelScope.launch {
+
             repository.update(
                 note.copy(
-                    updatedAt = System.currentTimeMillis()
+                    updatedAt =
+                        System.currentTimeMillis()
                 )
             )
         }
@@ -72,28 +90,111 @@ class NotesViewModel(
         )
     }
 
+    /**
+     * Move note to Trash.
+     *
+     * deletedAt is set only when the note
+     * enters Trash.
+     */
     fun moveToTrash(note: Note) {
-        updateNote(
-            note.copy(
-                isDeleted = true,
-                updatedAt = System.currentTimeMillis()
+
+        viewModelScope.launch {
+
+            val now =
+                System.currentTimeMillis()
+
+            repository.update(
+                note.copy(
+                    isDeleted = true,
+                    deletedAt = now,
+                    updatedAt = now
+                )
             )
-        )
+        }
     }
 
+    /**
+     * Restore a note from Trash.
+     */
     fun restore(note: Note) {
-        updateNote(
-            note.copy(
-                isDeleted = false,
-                updatedAt = System.currentTimeMillis()
+
+        viewModelScope.launch {
+
+            val now =
+                System.currentTimeMillis()
+
+            repository.update(
+                note.copy(
+                    isDeleted = false,
+                    deletedAt = null,
+                    updatedAt = now
+                )
             )
-        )
+        }
+    }
+
+    /**
+     * Permanently delete one note.
+     */
+    fun permanentlyDelete(note: Note) {
+
+        viewModelScope.launch {
+            repository.delete(note)
+        }
+    }
+
+    /**
+     * Restore every note currently in Trash.
+     */
+    fun restoreAllTrash() {
+
+        viewModelScope.launch {
+
+            repository.restoreAllTrash(
+                updatedAt =
+                    System.currentTimeMillis()
+            )
+        }
+    }
+
+    /**
+     * Permanently delete every note in Trash.
+     */
+    fun deleteAllTrash() {
+
+        viewModelScope.launch {
+            repository.deleteAllTrash()
+        }
+    }
+
+    /**
+     * Remove notes that stayed in Trash
+     * for 30 days or more.
+     *
+     * This runs when the app starts.
+     */
+    private fun cleanupExpiredTrash() {
+
+        viewModelScope.launch {
+
+            val expirationTime =
+                System.currentTimeMillis() -
+                        (
+                                TRASH_RETENTION_DAYS *
+                                        MILLIS_PER_DAY
+                                )
+
+            repository.deleteExpiredTrash(
+                expirationTime
+            )
+        }
     }
 
     private fun seedNotes() {
+
         viewModelScope.launch {
 
-            val existingNotes = repository
+            repository
                 .observeNotes()
                 .collect { notes ->
 
@@ -102,7 +203,8 @@ class NotesViewModel(
                         repository.insert(
                             Note(
                                 title = "Shopping List",
-                                content = "Milk, Bread, Eggs, Fruits...",
+                                content =
+                                    "Milk, Bread, Eggs, Fruits...",
                                 color = "#6C5CE7"
                             )
                         )
@@ -110,7 +212,8 @@ class NotesViewModel(
                         repository.insert(
                             Note(
                                 title = "Study Plan",
-                                content = "Math\nPhysics\nChemistry\nEnglish",
+                                content =
+                                    "Math\nPhysics\nChemistry\nEnglish",
                                 color = "#FDCB6E"
                             )
                         )
@@ -118,7 +221,8 @@ class NotesViewModel(
                         repository.insert(
                             Note(
                                 title = "Idea for Project",
-                                content = "A new app idea for students...",
+                                content =
+                                    "A new app idea for students...",
                                 color = "#55EFC4"
                             )
                         )
@@ -126,13 +230,12 @@ class NotesViewModel(
                         repository.insert(
                             Note(
                                 title = "Daily Thoughts",
-                                content = "Today was a productive day!",
+                                content =
+                                    "Today was a productive day!",
                                 color = "#FF7675"
                             )
                         )
                     }
-
-                    return@collect
                 }
         }
     }

@@ -18,5 +18,7 @@ data class Note(
 
     val isDeleted: Boolean = false,
 
+    val deletedAt: Long? = null,
+
     val updatedAt: Long = System.currentTimeMillis()
 )
